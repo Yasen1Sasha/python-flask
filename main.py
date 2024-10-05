@@ -1,4 +1,7 @@
-from flask import Flask, render_template
+#from datatime import datetimegit
+from datetime import datetime
+
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 import os
@@ -21,9 +24,18 @@ class User(db.Model):
         return f'<User: {self.username}>'
 
 
+class Poster(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_name = db.Column(db.String(255), nullable=False)
+    post_test = db.Column(db.Text(), nullable=False, unique=True)
+    post_image = db.Column(db.String(255), nullable=False)
+    continent = db.Column(db.String(255), nullable=False)
+    created_on = db.Column(db.Date(), default=datetime.utcnow())
+
+
 # створюємо базу даних, використовуємо один раз, після створення закоментувати
-# with app.app_context():
-#     db.create_all()
+#with app.app_context():
+#   db.create_all()
 
 
 @app.route('/')
@@ -39,7 +51,16 @@ def articles():
 
     return render_template('articles.html', articles=new_articles)
 
+@app.route('/add_articles', methods=['POST'])
+def add_article():
+    post_name = request.form['title']
+    post_test = request.form['text']
+    post_image = request.form['URL']
+    contient = request.form['continent']
 
+    row = Poster(post_name=post_name,post_test=post_test,post_image=post_image,continent=continent)
+
+    return render_template('add_article.html')
 
 @app.route('/details')
 def details():
@@ -48,7 +69,7 @@ def details():
 
 @app.route('/login')
 def login():    
-    return render_template('login.html', message=message)
+    return render_template('login.html', message='message')
 
 
 
